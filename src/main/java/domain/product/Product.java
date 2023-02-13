@@ -1,10 +1,11 @@
 package domain.product;
 
-public interface Product {
+import domain.wallet.Wallet;
 
-    String getName();
-    Integer getPrice();
-    Integer getStock();
-    Boolean checkStock();
-    void sell();
+import java.util.List;
+
+public interface Product {
+     void moveToCart();
+     List<Object> productInfo();
+     Boolean significant(Wallet wallet);
 }
