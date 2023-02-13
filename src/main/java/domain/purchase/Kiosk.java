@@ -1,47 +1,51 @@
 package domain.purchase;
 
-import domain.Customer;
-import domain.product.Product;
-import domain.wallet.IdCard;
+import domain.InfoMessage;
+import domain.customer.Customer;
 import domain.wallet.PayType;
+import domain.wallet.Payment;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class Kiosk {
+public class Kiosk implements Purchase{
 
-    private Integer card = 0;
-    private Integer cash = 0;
+    private final List<Payment> purchaseInfo;
 
-    public String order(Customer customer, Product product) {
-
-        int price = product.getPrice();
-
-        if (customer.checkEnoughMoney(price)) return ("잔액부족");
-        else if (!product.checkStock()) return ("재고부족");
-
-        sell(customer, product);
-
-        return "구매 성공";
+    public Kiosk(List<Payment> purchaseInfo) {
+        this.purchaseInfo = purchaseInfo;
     }
 
-    public String order(Customer customer, Product product, IdCard idCard) {
-
-        if(idCard.checkAge())
-            return order(customer, product);
-        return ("구매 불가");
+    public Kiosk(){
+        this.purchaseInfo = new ArrayList<>();
     }
 
-    public void showInfo(List<Product> products) {
-        for (Product p : products)
-            System.out.println(p.getName()+"의 재고 : "+p.getStock() + "개");
-        System.out.println("카드 매출 : " + card + " 현금 매출 : "+ cash);
+    @Override
+    public void purchaseAll(Customer customer) {
+
+        int totalPrice = customer.giveCart().get("total");
+        Payment userPaymentInfo = customer.getWallet().getPayment();
+        if (!customer.checkBalance(totalPrice))
+            System.out.println(customer.getCustomerName() +"의 "+ InfoMessage.NOT_ENOUGH_MONEY.get());
+        else {
+            System.out.println(customer.getCustomerName() + "의 " + InfoMessage.SUCCESS.get());
+            purchaseInfo.add(new Payment(userPaymentInfo.getPayType(), totalPrice));
+        }
+        System.out.println("\t" + "결제금액 : " + totalPrice + "\n\t" + userPaymentInfo.toString());
     }
 
-    public void sell(Customer customer, Product product){
-        product.sell();
-        if (customer.pay(product).equals(PayType.Cash))
-            cash+= product.getPrice();
-        else
-            card+= product.getPrice();
+    @Override
+    public void settlement() {
+        int cardSales = 0;
+        int cashSales = 0;
+        for (Payment p : purchaseInfo){
+            if (p.getPayType().equals(PayType.Cash))
+                cashSales += p.getMoney();
+            else if(p.getPayType().equals(PayType.Card))
+                cardSales += p.getMoney();
+        }
+        System.out.println("키오스크 정산"
+                + "\n\t카드 : " + cardSales
+                + "\n\t현금 : " + cashSales);
     }
 }
