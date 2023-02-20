@@ -12,11 +12,6 @@ public class WalletImpl implements Wallet{
         this.idCard = idCard;
     }
 
-    public WalletImpl(PayType payType, int money) {
-        this.payment = new Payment(payType, money);
-        this.idCard = null;
-    }
-
     @Override
     public Payment getPayment() {
         return payment;
@@ -24,11 +19,15 @@ public class WalletImpl implements Wallet{
 
     @Override
     public Boolean compareTo(int price) {
-        return payment.getMoney()-price >= 0;
+        return isEnoughMoney(price);
     }
 
     @Override
     public Boolean checkIdCard() {
         return idCard != null && idCard.checkId();
+    }
+
+    private boolean isEnoughMoney(int price) {
+        return payment.getMoney() - price >= 0;
     }
 }

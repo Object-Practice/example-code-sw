@@ -26,12 +26,12 @@ public class Kiosk implements Purchase{
         int totalPrice = customer.giveCart().get("total");
         Payment userPaymentInfo = customer.getWallet().getPayment();
         if (!customer.checkBalance(totalPrice))
-            System.out.println(customer.getCustomerName() +"의 "+ InfoMessage.NOT_ENOUGH_MONEY.get());
+            printNotEnoughMoney(customer);
         else {
-            System.out.println(customer.getCustomerName() + "의 " + InfoMessage.SUCCESS.get());
-            purchaseInfo.add(new Payment(userPaymentInfo.getPayType(), totalPrice));
+            printSuccess(customer);
+            addPurchaseHistory(totalPrice, userPaymentInfo);
         }
-        System.out.println("\t" + "결제금액 : " + totalPrice + "\n\t" + userPaymentInfo.toString());
+        printPurchaseResult(totalPrice, userPaymentInfo);
     }
 
     @Override
@@ -44,8 +44,28 @@ public class Kiosk implements Purchase{
             else if(p.getPayType().equals(PayType.Card))
                 cardSales += p.getMoney();
         }
+        printSettlementResult(cardSales, cashSales);
+    }
+
+    private void printSettlementResult(int cardSales, int cashSales) {
         System.out.println("키오스크 정산"
                 + "\n\t카드 : " + cardSales
                 + "\n\t현금 : " + cashSales);
+    }
+
+    private void printPurchaseResult(int totalPrice, Payment userPaymentInfo) {
+        System.out.println("\t" + "결제금액 : " + totalPrice + "\n\t" + userPaymentInfo.toString());
+    }
+
+    private void addPurchaseHistory(int totalPrice, Payment userPaymentInfo) {
+        purchaseInfo.add(new Payment(userPaymentInfo.getPayType(), totalPrice));
+    }
+
+    private void printSuccess(Customer customer) {
+        System.out.println(customer.getCustomerName() + "의 " + InfoMessage.SUCCESS.get());
+    }
+
+    private void printNotEnoughMoney(Customer customer) {
+        System.out.println(customer.getCustomerName() +"의 "+ InfoMessage.NOT_ENOUGH_MONEY.get());
     }
 }

@@ -22,6 +22,10 @@ public class Payment {
     }
 
     public String toString(){
+        return balanceString();
+    }
+
+    private String balanceString() {
         return "잔액 : " + payType.toString() + " " + money + "원";
     }
 }
