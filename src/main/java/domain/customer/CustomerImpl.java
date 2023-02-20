@@ -4,8 +4,8 @@ import domain.InfoMessage;
 import domain.product.Product;
 import static domain.product.ProductType.*;
 import domain.wallet.Wallet;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CustomerImpl implements Customer{
@@ -30,24 +30,7 @@ public class CustomerImpl implements Customer{
     public void chooseItem(Product item) {
 
         var itemInfo = item.productInfo();
-        if (!item.significant(wallet))
-            System.out.println(name + "이 구매 할 수 없는 품목 : " + itemInfo.get(NAME.toNumber()));
-        else if ((int)itemInfo.get(BALANCE.toNumber()) < 1)
-            System.out.println(itemInfo.get(NAME.toNumber()) + " " +InfoMessage.NOT_ENOUGH_PRODUCT.get());
-        else {
-            putCart(item);
-            shoppingCart.replace("total", shoppingCart.get("total") + (int)itemInfo.get(PRICE.toNumber()));
-            System.out.println(this.name + "이 카트에 담은 물건 : " + itemInfo.get(NAME.toNumber()));
-        }
-    }
-
-    private void putCart(Product item) {
-        String itemName = (String) item.productInfo().get(NAME.toNumber());
-        if (shoppingCart.containsKey(itemName))
-            shoppingCart.replace(itemName, shoppingCart.get(itemName) + 1);
-        else
-            shoppingCart.put(itemName, 1);
-        item.moveToCart();
+        checkIfChoose(item, itemInfo);
     }
 
     @Override
@@ -77,5 +60,43 @@ public class CustomerImpl implements Customer{
             return true;
         }
         else return false;
+    }
+
+    private void checkIfChoose(Product item, List<Object> itemInfo) {
+        if (!item.significant(wallet))
+            printNotEnoughMoney(itemInfo);
+        else if ((int) itemInfo.get(BALANCE.toNumber()) < 1)
+            printNotEnoughBalance(itemInfo);
+        else {
+            putInCustomerCart(item, itemInfo);
+        }
+
+    }
+
+    private void printNotEnoughBalance(List<Object> itemInfo) {
+        System.out.println(itemNumber(itemInfo) + " " + InfoMessage.NOT_ENOUGH_PRODUCT.get());
+    }
+
+    private void printNotEnoughMoney(List<Object> itemInfo) {
+        System.out.println(name + "이 구매 할 수 없는 품목 : " + itemNumber(itemInfo));
+    }
+
+    private String itemNumber(List<Object> itemInfo) {
+        return (String) itemInfo.get(NAME.toNumber());
+    }
+
+    private void putInCustomerCart(Product item, List<Object> itemInfo) {
+        putCart(item);
+        shoppingCart.replace("total", shoppingCart.get("total") + (int) itemInfo.get(PRICE.toNumber()));
+        System.out.println(this.name + "이 카트에 담은 물건 : " + itemInfo.get(NAME.toNumber()));
+    }
+
+    private void putCart(Product item) {
+        String itemName = (String) item.productInfo().get(NAME.toNumber());
+        if (shoppingCart.containsKey(itemName))
+            shoppingCart.replace(itemName, shoppingCart.get(itemName) + 1);
+        else
+            shoppingCart.put(itemName, 1);
+        item.moveToCart();
     }
 }
