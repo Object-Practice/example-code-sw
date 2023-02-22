@@ -5,13 +5,12 @@ import domain.product.items.Alcohol;
 import domain.product.items.IceCream;
 import domain.product.items.Snack;
 import domain.purchase.Kiosk;
-import domain.wallet.PayType;
-import domain.wallet.Wallet;
-import domain.wallet.WalletImpl;
+import domain.wallet.*;
 import domain.wallet.idCard.IdCard;
 import domain.wallet.idCard.IdCardImpl;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Factory {
 
@@ -19,12 +18,16 @@ public class Factory {
         return new CustomerImpl(name, wallet);
     }
 
-    public static WalletImpl createWallet(PayType payType, int money, IdCard idCard){
-        return new WalletImpl(payType, money, idCard);
+    public static WalletImpl createWallet(List<Payment> payments, IdCard idCard){
+        return new WalletImpl(payments, idCard);
     }
 
-    public static WalletImpl createWallet(PayType payType, int money){
-        return new WalletImpl(payType, money, null);
+    public static WalletImpl createWallet(List<Payment> payments){
+        return new WalletImpl(payments, null);
+    }
+
+    public static Payment createPay(String name, PayType payType, int price){
+        return new PaymentImpl(name, payType, price);
     }
 
     public static IdCardImpl createIdCard(LocalDate birthDate){

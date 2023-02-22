@@ -2,24 +2,30 @@ package domain.wallet;
 
 import domain.wallet.idCard.IdCard;
 
+import java.util.List;
+
 public class WalletImpl implements Wallet{
 
-    private final Payment payment;
+    private final List<Payment> payments;
     private final IdCard idCard;
 
-    public WalletImpl(PayType payType, int money, IdCard idCard) {
-        this.payment = new Payment(payType, money);
+    public WalletImpl(List<Payment> payments, IdCard idCard) {
+        this.payments = payments;
         this.idCard = idCard;
     }
 
     @Override
-    public Payment getPayment() {
-        return payment;
+    public Payment findByName(String name) {
+        for (Payment p:payments)
+            if(name.equals(p.getPaymentName()))
+                return p;
+        return null;
     }
 
     @Override
-    public Boolean compareTo(int price) {
-        return isEnoughMoney(price);
+    public Boolean compareTo(Payment payment, int price) {
+        Payment pay = findByName(payment.getPaymentName());
+        return isEnoughMoney(pay, price);
     }
 
     @Override
@@ -27,7 +33,7 @@ public class WalletImpl implements Wallet{
         return idCard != null && idCard.checkId();
     }
 
-    private boolean isEnoughMoney(int price) {
+    private boolean isEnoughMoney(Payment payment, int price) {
         return payment.getMoney() - price >= 0;
     }
 }

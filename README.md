@@ -22,3 +22,8 @@
 | --- |----------------------| --- |
 | 계산 | 상품의 이름 →<br/>← 상품의 재고 | 상품                   |
 | 고객 | 잔액 조회 →<br/>← 구매 가능 여부 | 지갑                   |
+| 지갑 | 정보 조회 →<br/>← 존재, 유효 여부 판단 | 신분증                  |
+
+### Class Diagram
+
+<img width="948" alt="UML" src="https://user-images.githubusercontent.com/66061268/220630955-a9bc70a8-7db4-43dc-8613-d9e1c5f62384.png">

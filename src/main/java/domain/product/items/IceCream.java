@@ -21,7 +21,11 @@ public class IceCream implements Product {
 
     @Override
     public void moveToCart() {
-        itemInfo.set(BALANCE.toNumber(), (int)itemInfo.get(BALANCE.toNumber()) - 1);
+        itemInfo.set(BALANCE.toNumber(), reduceBalance());
+    }
+
+    private int reduceBalance() {
+        return (int) itemInfo.get(BALANCE.toNumber()) - 1;
     }
 
     @Override

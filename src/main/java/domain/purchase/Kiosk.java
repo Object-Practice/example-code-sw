@@ -8,28 +8,26 @@ import domain.wallet.Payment;
 import java.util.ArrayList;
 import java.util.List;
 
+import static domain.factory.Factory.createPay;
+
 public class Kiosk implements Purchase{
 
     private final List<Payment> purchaseInfo;
-
-    public Kiosk(List<Payment> purchaseInfo) {
-        this.purchaseInfo = purchaseInfo;
-    }
 
     public Kiosk(){
         this.purchaseInfo = new ArrayList<>();
     }
 
     @Override
-    public void purchaseAll(Customer customer) {
+    public void purchaseAll(Customer customer, String name) {
 
         int totalPrice = customer.giveCart().get("total");
-        Payment userPaymentInfo = customer.getWallet().getPayment();
-        if (!customer.checkBalance(totalPrice))
-            printNotEnoughMoney(customer);
+        Payment userPaymentInfo = customer.getWallet().findByName(name);
+        if (!customer.checkBalance(userPaymentInfo, totalPrice))
+            printNotEnoughMoney(customer, userPaymentInfo.getPaymentName());
         else {
-            printSuccess(customer);
-            addPurchaseHistory(totalPrice, userPaymentInfo);
+            printSuccess(customer, userPaymentInfo.getPaymentName());
+            addPurchaseHistory(name, totalPrice, userPaymentInfo);
         }
         printPurchaseResult(totalPrice, userPaymentInfo);
     }
@@ -54,18 +52,18 @@ public class Kiosk implements Purchase{
     }
 
     private void printPurchaseResult(int totalPrice, Payment userPaymentInfo) {
-        System.out.println("\t" + "결제금액 : " + totalPrice + "\n\t" + userPaymentInfo.toString());
+        System.out.println(userPaymentInfo.getPaymentName()+"\t" + "결제금액 : " + totalPrice + "\n\t" + userPaymentInfo.toString());
     }
 
-    private void addPurchaseHistory(int totalPrice, Payment userPaymentInfo) {
-        purchaseInfo.add(new Payment(userPaymentInfo.getPayType(), totalPrice));
+    private void addPurchaseHistory(String name, int totalPrice, Payment userPaymentInfo) {
+        purchaseInfo.add(createPay(name, userPaymentInfo.getPayType(), totalPrice));
     }
 
-    private void printSuccess(Customer customer) {
-        System.out.println(customer.getCustomerName() + "의 " + InfoMessage.SUCCESS.get());
+    private void printSuccess(Customer customer, String name) {
+        System.out.println(customer.getCustomerName() + "의 " + name +" "+ InfoMessage.SUCCESS.get());
     }
 
-    private void printNotEnoughMoney(Customer customer) {
-        System.out.println(customer.getCustomerName() +"의 "+ InfoMessage.NOT_ENOUGH_MONEY.get());
+    private void printNotEnoughMoney(Customer customer, String name) {
+        System.out.println(customer.getCustomerName() +"의 "+ name +" "+ InfoMessage.NOT_ENOUGH_MONEY.get());
     }
 }
