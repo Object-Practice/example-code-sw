@@ -3,6 +3,8 @@ package domain.customer;
 import domain.InfoMessage;
 import domain.product.Product;
 import static domain.product.ProductType.*;
+
+import domain.wallet.Payment;
 import domain.wallet.Wallet;
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +29,12 @@ public class CustomerImpl implements Customer{
     }
 
     @Override
-    public void chooseItem(Product item) {
+    public void chooseItem(List<Product> items) {
 
-        var itemInfo = item.productInfo();
-        checkIfChoose(item, itemInfo);
+        for(Product p:items){
+            var itemInfo = p.productInfo();
+            checkIfChoose(p, itemInfo);
+        }
     }
 
     @Override
@@ -54,9 +58,9 @@ public class CustomerImpl implements Customer{
     }
 
     @Override
-    public Boolean checkBalance(int price) {
-        if (wallet.compareTo(price)) {
-            wallet.getPayment().buy(price);
+    public Boolean checkBalance(Payment payment, int price) {
+        if (wallet.compareTo(payment, price)) {
+            wallet.findByName(payment.getPaymentName()).buy(price);
             return true;
         }
         else return false;

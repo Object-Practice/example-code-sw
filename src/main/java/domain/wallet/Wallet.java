@@ -1,7 +1,7 @@
 package domain.wallet;
 
 public interface Wallet {
-    Payment getPayment();
-    Boolean compareTo(int price);
+    Payment findByName(String name);
+    Boolean compareTo(Payment payment, int price);
     Boolean checkIdCard();
 }
